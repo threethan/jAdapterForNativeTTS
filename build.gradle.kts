@@ -16,7 +16,6 @@ publishing {
       pom {
         url.set("https://github.com/jonelo/jAdapterForNativeTTS")
         name.set("jAdapterForNativeTTS")
-        description.set("A purely functional algebraic graph library")
         scm {
           url.set("https://github.com/jonelo/jAdapterForNativeTTS")
         }
