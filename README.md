@@ -7,9 +7,9 @@ Microsoft Windows, GNU/Linux, and macOS are supported.
 
 ## What are the system requirements
 * Java 11 or later
-* Powershell on Windows 10
+* PowerShell on Microsoft Windows 10, or 11
 * spd-say on GNU/Linux
-* say on macOS
+* say on macOS 10.13, 10.14, 10.15, 11, 12, or 13
 * installed voices (see also "How to add more voices")
 
 ## How to use it
@@ -21,33 +21,31 @@ set the voice of your choice either directly or by providing voice preferences a
     String text = "The answer to the ultimate question of life, the universe, and everything is 42";
     try {
         SpeechEngine speechEngine = SpeechEngineNative.getInstance();
-
         List<Voice> voices = speechEngine.getAvailableVoices();
-        if (voices.size() > 0) {
-            System.out.println("For now the following voices are supported:\n");
-            for (Voice voice : voices) {
-                System.out.printf("%s\n", voice);
-            }
-            // We want to find a voice according our preferences
-            VoicePreferences voicePreferences = new VoicePreferences();
-            voicePreferences.setLanguage("en"); //  ISO-639-1
-            voicePreferences.setCountry("GB"); // ISO 3166-1 Alpha-2 code
-            voicePreferences.setGender(VoicePreferences.Gender.FEMALE);
 
-            Voice voice = speechEngine.findVoiceByPreferences(voicePreferences);
-            // simple fallback just in case our preferences didn't match any voice
-            if (voice == null) {
-                System.out.printf("Warning: Voice has not been found by the voice preferences %s\n", voicePreferences);
-                voice = voices.get(0);
-                System.out.printf("Using \"%s\" instead.\n", voice);
-            }
-            speechEngine.setVoice(voice.getName());
-            speechEngine.say(text);
-        } else {
-            System.out.printf("Error: not even one voice have been found.\n");
+        System.out.println("For now the following voices are supported:\n");
+        for (Voice voice : voices) {
+            System.out.printf("%s%n", voice);
         }
 
-    } catch (NotSupportedOperatingSystemException | IOException e) {
+        // We want to find a voice according our preferences
+        VoicePreferences voicePreferences = new VoicePreferences();
+        voicePreferences.setLanguage("en"); //  ISO-639-1
+        voicePreferences.setCountry("GB"); // ISO 3166-1 Alpha-2 code
+        voicePreferences.setGender(VoicePreferences.Gender.FEMALE);
+        Voice voice = speechEngine.findVoiceByPreferences(voicePreferences);
+
+        // simple fallback just in case our preferences didn't match any voice
+        if (voice == null) {
+            System.out.printf("Warning: Voice has not been found by the voice preferences %s%n", voicePreferences);
+            voice = voices.get(0); // it is guaranteed that the speechEngine supports at least one voice
+            System.out.printf("Using \"%s\" instead.%n", voice);
+        }
+
+        speechEngine.setVoice(voice.getName());
+        speechEngine.say(text);
+
+    } catch (SpeechEngineCreationException | IOException e) {
         System.err.println(e.getMessage());
     }
 ```
@@ -59,7 +57,7 @@ Please stay tuned for an artifact on Maven Central.
 For demonstration purposes, you can also call the Text User Interface (see also Main.java):
 
 ```
-java -jar jadapter-for-native-tts-*.jar "The answer to the ultimate question of life, the universe, and everything is 42"
+> java -jar jadapter-for-native-tts-0.12.0.jar "The answer to the ultimate question of life, the universe, and everything is 42"
 0: name='Microsoft Hedda Desktop', culture='de-DE', gender='Female', age='Adult', description='Microsoft Hedda Desktop (de_DE, Female)'
 1: name='Microsoft Hedda', culture='de-DE', gender='Female', age='Adult', description='Microsoft Hedda (de_DE, Female)'
 2: name='Microsoft Katja', culture='de-DE', gender='Female', age='Adult', description='Microsoft Katja (de_DE, Female)'

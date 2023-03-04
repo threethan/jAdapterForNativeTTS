@@ -24,6 +24,7 @@
 
 package io.github.jonelo.jAdapterForNativeTTS.engines;
 
+import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.SpeechEngineCreationException;
 import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.ParseException;
 import io.github.jonelo.jAdapterForNativeTTS.util.os.ProcessHelper;
 
@@ -37,32 +38,53 @@ public abstract class SpeechEngineAbstract implements SpeechEngine {
     protected Process process;
     protected List<Voice> availableVoices;
     protected int rate;
+    protected List<ParseException> parseExceptions;
 
     public void setVoice(String voice) {
         this.voice = voice;
     }
 
-    public SpeechEngineAbstract() {
+    /**
+     * Creates a SpeechEngine for your platform.
+     * After construction, it is guaranteed that at least one voice can be provided.
+     * @throws SpeechEngineCreationException if the SpeechEngine cannot be created or if not even one voice can be found.
+     */
+    public SpeechEngineAbstract() throws SpeechEngineCreationException {
+        parseExceptions = new ArrayList<>();
         try {
             findAvailableVoices();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (IOException | InterruptedException e) {
+            throw new SpeechEngineCreationException(e.getMessage());
+        }
+        if (availableVoices.size() == 0) {
+            throw new SpeechEngineCreationException(String.format("Not even one voice has been found. There were %s parse error(s).%n", getParseExceptions().size()));
         }
         this.voice = null;
         rate = 0; // normal voice speed
     }
 
-
-    public SpeechEngineAbstract(String voice) {
+    public SpeechEngineAbstract(String voice) throws SpeechEngineCreationException {
         this();
         this.voice = voice;
     }
 
+    /**
+     * Returns all available voices that are supported by this SpeechEngine instance.
+     * @return all available voices that are supported by this SpeechEngine instance.
+     */
     public List<Voice> getAvailableVoices() {
         return availableVoices;
     }
 
-    public void findAvailableVoices() throws IOException, InterruptedException, ParseException {
+    /**
+     * Returns all ParseExceptions during creation of this SpeechEngine instance.
+     * @return all ParseExceptions during creation of this SpeechEngine instance.
+     */
+    public List<ParseException> getParseExceptions() {
+        return parseExceptions;
+    }
+
+    public void findAvailableVoices() throws IOException, InterruptedException {
         ArrayList<String> list = ProcessHelper.startApplicationAndGetOutput(getSayExecutable(), getSayOptionsToGetSupportedVoices());
         ArrayList<Voice> voices = new ArrayList<>();
         for (String line : list) {
@@ -71,7 +93,9 @@ public abstract class SpeechEngineAbstract implements SpeechEngine {
                 if (v != null) {
                     voices.add(v);
                 }
-            } catch (ParseException e) {}
+            } catch (ParseException e) {
+                parseExceptions.add(e);
+            }
         }
         availableVoices = voices;
     }
@@ -79,7 +103,7 @@ public abstract class SpeechEngineAbstract implements SpeechEngine {
     /**
      * Find a Voice instance by providing voice preferences.
      * @param voicePreferences the preferences for a voice
-     * @return an instance of the voice that matches the voicePreferences
+     * @return an instance of the voice that matches the voicePreferences, null if voice is not found by the voicePreferences
      */
     public Voice findVoiceByPreferences(VoicePreferences voicePreferences) {
         for (Voice voice : availableVoices) {
@@ -116,6 +140,5 @@ public abstract class SpeechEngineAbstract implements SpeechEngine {
         if (rate < -100 || rate > 100) throw new IllegalArgumentException("Invalid range for rate, valid range is [-100..100]");
         this.rate = rate;
     }
-
 
 }

@@ -24,10 +24,10 @@
 
 package io.github.jonelo.jAdapterForNativeTTS.engines;
 
+import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.SpeechEngineCreationException;
 import io.github.jonelo.jAdapterForNativeTTS.engines.linux.SpeechEngineLinux;
 import io.github.jonelo.jAdapterForNativeTTS.engines.macos.SpeechEngineMacOS;
 import io.github.jonelo.jAdapterForNativeTTS.engines.windows.SpeechEngineWindows;
-import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.NotSupportedOperatingSystemException;
 
 import java.util.Locale;
 
@@ -38,7 +38,7 @@ public class SpeechEngineNative {
 
     private static SpeechEngine engine = null;
 
-    public static SpeechEngine getInstance() throws NotSupportedOperatingSystemException {
+    public static SpeechEngine getInstance() throws SpeechEngineCreationException {
         if (engine == null) {
             String osName = System.getProperty("os.name");
             String osNameForComparison = osName.replaceAll("\\s", "").toLowerCase(Locale.US);
@@ -56,10 +56,9 @@ public class SpeechEngineNative {
             if (osNameForComparison.startsWith("linux")) {
                 engine = new SpeechEngineLinux();
             } else {
-                throw new NotSupportedOperatingSystemException(String.format("Operating System '%s' is not supported.", osName));
+                throw new SpeechEngineCreationException(String.format("Operating System '%s' is not supported.", osName));
             }
         }
-
         return engine;
     }
 }

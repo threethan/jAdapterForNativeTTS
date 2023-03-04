@@ -28,8 +28,8 @@ import io.github.jonelo.jAdapterForNativeTTS.engines.SpeechEngine;
 import io.github.jonelo.jAdapterForNativeTTS.engines.SpeechEngineNative;
 import io.github.jonelo.jAdapterForNativeTTS.engines.Voice;
 import io.github.jonelo.jAdapterForNativeTTS.engines.VoicePreferences;
-import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.NotSupportedOperatingSystemException;
 import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.ParseException;
+import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.SpeechEngineCreationException;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,11 +41,13 @@ import java.util.Scanner;
  */
 public class Main {
 
+    private SpeechEngine speechEngine;
+
     /**
      * Prints the usage to the standard output.
      */
     public static void usage() {
-        System.out.println("java -jar jadapter-for-native-tts-*.jar [word]...");
+        System.out.println("java -jar jadapter-for-native-tts-0.12.0.jar [word]...");
     }
 
 
@@ -61,6 +63,9 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Rate [-100..100]: ");
         String rate = scanner.nextLine();
+        if (rate.strip().length() == 0) {
+            return 0;
+        }
         try {
             return Integer.parseInt(rate);
         } catch (NumberFormatException e) {
@@ -109,7 +114,7 @@ public class Main {
      * @throws InterruptedException in case of an interrupt
      * @throws ParseException       in case of an parse error
      */
-    private Voice selectVoice(SpeechEngine speechEngine) throws InterruptedException, ParseException, IOException {
+    private Voice selectVoice(SpeechEngine speechEngine) throws InterruptedException, IOException {
 
         List<Voice> voices = speechEngine.getAvailableVoices();
         printVoices(voices);
@@ -117,7 +122,7 @@ public class Main {
         int id;
         // select a voice
         do {
-            System.out.printf("Enter the voice id (1-%d) or hit enter to specify voice preferences: ", voices.size() - 1);
+            System.out.printf("Enter the voice id (0-%d) or hit enter to specify voice preferences: ", voices.size() - 1);
             Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
             if (input.length() == 0) {
@@ -156,17 +161,15 @@ public class Main {
         return text.toString();
     }
 
-    private void sayText(String text) {
+    private void sayText(Voice voice, String text) {
         try {
-            SpeechEngine speechEngine = SpeechEngineNative.getInstance();
-            Voice voice = selectVoice(speechEngine);
             speechEngine.setVoice(voice.getName());
             speechEngine.setRate(readRateFromUser());
-            System.out.printf("Playing the following text: \"%s\"\n", text);
+            System.out.printf("Playing the following text: \"%s\"%n", text);
             speechEngine.say(text);
             // Thread.sleep(1000);
             // speechEngine.stopTalking();
-        } catch (NotSupportedOperatingSystemException | IOException | InterruptedException | ParseException | IllegalArgumentException ex) {
+        } catch (IOException ex) {
             System.err.printf("Error: %s%n", ex.getMessage());
         }
     }
@@ -178,7 +181,27 @@ public class Main {
      */
     public Main(String[] args) {
         if (args.length > 0) {
-            sayText(concatenateArgs(args));
+            try {
+                speechEngine = SpeechEngineNative.getInstance();
+
+                // the speechEngine has been created with at least one voice,
+                // but if there were parsing errors, we should need to know.
+                // Usually that shouldn't happen if you use the latest and greatest release.
+                if (speechEngine.getParseExceptions().size() > 0) {
+                    System.err.printf("Warning: the SpeechEngine supports %d voice(s), but there were %d unexpected parsing errors.%n",
+                            speechEngine.getAvailableVoices().size(), speechEngine.getParseExceptions().size());
+                    int errorId = 0;
+                    for (ParseException parseException : speechEngine.getParseExceptions()) {
+                        System.err.printf("    Parsing Error (%d): %s%n", errorId++, parseException.getMessage());
+                    }
+                    System.err.printf("    Please report the above errors at https://github.com/jonelo/jAdapterForNativeTTS/issues%n%n");
+                }
+
+                Voice voice = selectVoice(speechEngine);
+                sayText(voice, concatenateArgs(args));
+            } catch (SpeechEngineCreationException | IOException | InterruptedException e) {
+                System.err.printf("Error: %s%n", e.getMessage());
+            }
         } else {
             usage();
         }

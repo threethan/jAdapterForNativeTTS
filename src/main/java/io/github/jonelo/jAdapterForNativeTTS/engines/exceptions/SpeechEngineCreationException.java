@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 Johann N. Löfflmann
+ * Copyright (c) 2023 Johann N. Löfflmann
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,8 @@
 
 package io.github.jonelo.jAdapterForNativeTTS.engines.exceptions;
 
-public class NotSupportedOperatingSystemException extends Exception {
-
-        public NotSupportedOperatingSystemException(String string) {
-            super(string);
-        }
+public class SpeechEngineCreationException extends Exception {
+    public SpeechEngineCreationException(String string) {
+        super(string);
+    }
 }

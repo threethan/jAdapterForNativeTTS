@@ -40,9 +40,11 @@ public interface SpeechEngine {
 
     Voice parse(String line) throws ParseException;
 
-    void findAvailableVoices() throws IOException, InterruptedException, ParseException;
+    void findAvailableVoices() throws IOException, InterruptedException;
 
     List<Voice> getAvailableVoices();
+
+    List<ParseException> getParseExceptions();
 
     Voice findVoiceByPreferences(VoicePreferences voicePreferences);
 
