@@ -28,6 +28,9 @@ import io.github.jonelo.jAdapterForNativeTTS.engines.SpeechEngineAbstract;
 import io.github.jonelo.jAdapterForNativeTTS.engines.Voice;
 import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.ParseException;
 import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.SpeechEngineCreationException;
+import io.github.jonelo.jAdapterForNativeTTS.util.os.ProcessHelper;
+
+import java.io.IOException;
 
 public class SpeechEngineLinux extends SpeechEngineAbstract {
     public SpeechEngineLinux() throws SpeechEngineCreationException {
@@ -65,5 +68,16 @@ public class SpeechEngineLinux extends SpeechEngineAbstract {
         voice.setAge("?");
         voice.setDescription(tokens[0]);
         return voice;
+    }
+
+    @Override
+    public void stopTalking() {
+        if (process != null) {
+            process.destroy();
+            try {
+                ProcessHelper.startApplication(getSayExecutable(), "-S");
+            } catch (IOException ignored) {}
+            process = null;
+        }
     }
 }
