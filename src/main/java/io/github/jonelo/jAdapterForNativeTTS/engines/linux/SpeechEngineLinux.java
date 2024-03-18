@@ -30,7 +30,6 @@ import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.ParseException;
 import io.github.jonelo.jAdapterForNativeTTS.engines.exceptions.SpeechEngineCreationException;
 
 public class SpeechEngineLinux extends SpeechEngineAbstract {
-
     public SpeechEngineLinux() throws SpeechEngineCreationException {
         super();
     }
@@ -44,7 +43,7 @@ public class SpeechEngineLinux extends SpeechEngineAbstract {
     }
 
     public String[] getSayOptionsToSayText(String text) {
-        return new String[]{"-w", "-l", voice, "-r", String.valueOf(rate), text};
+        return new String[]{"-w", "-y", voice, "-r", String.valueOf(rate), text};
     }
 
     // returns null if the header is found
@@ -60,9 +59,9 @@ public class SpeechEngineLinux extends SpeechEngineAbstract {
             return null;
         }
         Voice voice = new Voice();
-        voice.setName(tokens[1]);
+        voice.setName(tokens[0]);
         voice.setCulture(tokens[1]);
-        voice.setGender("?");
+        voice.setGender(tokens[2].contains("male") ? "male" : tokens[2].contains("female") ? "female" : "?");
         voice.setAge("?");
         voice.setDescription(tokens[0]);
         return voice;

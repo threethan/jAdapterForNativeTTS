@@ -56,7 +56,7 @@ public abstract class SpeechEngineAbstract implements SpeechEngine {
         } catch (IOException | InterruptedException e) {
             throw new SpeechEngineCreationException(e.getMessage());
         }
-        if (availableVoices.size() == 0) {
+        if (availableVoices.isEmpty()) {
             throw new SpeechEngineCreationException(String.format("Not even one voice has been found. There were %s parse error(s).%n", getParseExceptions().size()));
         }
         this.voice = null;
