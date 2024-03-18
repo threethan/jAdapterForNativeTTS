@@ -44,7 +44,7 @@ public class SpeechEngineLinux extends SpeechEngineAbstract {
     }
 
     public String[] getSayOptionsToSayText(String text) {
-        return new String[]{"-l", voice, "-r", String.valueOf(rate), text};
+        return new String[]{"-w", "-l", voice, "-r", String.valueOf(rate), text};
     }
 
     // returns null if the header is found

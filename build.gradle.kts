@@ -6,6 +6,11 @@ plugins {
 group = "io.github.jonelo"
 version = "0.12.0"
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 repositories {
   mavenCentral()
 }
