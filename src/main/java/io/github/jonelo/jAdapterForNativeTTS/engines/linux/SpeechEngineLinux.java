@@ -75,9 +75,9 @@ public class SpeechEngineLinux extends SpeechEngineAbstract {
         if (process != null) {
             process.destroy();
             try {
-                ProcessHelper.startApplication(getSayExecutable(), "-S");
+                process = ProcessHelper.startApplication(getSayExecutable(), "-S");
+                process.onExit().thenRun(() -> process = null);
             } catch (IOException ignored) {}
-            process = null;
         }
     }
 }
