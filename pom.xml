@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.jonelo</groupId>
+    <groupId>io.github.threethan</groupId>
     <artifactId>jadapter-for-native-tts</artifactId>
-    <version>0.12.0</version>
+    <version>0.13.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -19,7 +19,7 @@
     <description>A simple pure Java library that allows you to use the native
          Text To Speech engine provided by your operating system by using
          a ProcessBuilder without JNI. Microsoft Windows, GNU/Linux, and macOS are supported.</description>
-    <url>https://github.com/jonelo/jAdapterForNativeTTS</url>
+    <url>https://github.com/threethan/jAdapterForNativeTTS</url>
 
     <licenses>
         <license>
@@ -38,9 +38,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/jonelo/jAdapterForNativeTTS.git</connection>
-        <developerConnection>scm:git:ssh://github.com:jonelo/jAdapterForNativeTTS.git</developerConnection>
-        <url>https://github.com/jonelo/jAdapterForNativeTTS.git</url>
+        <connection>scm:git:git://github.com/threethan/jAdapterForNativeTTS.git</connection>
+        <developerConnection>scm:git:ssh://github.com:threethan/jAdapterForNativeTTS.git</developerConnection>
+        <url>https://github.com/threethan/jAdapterForNativeTTS.git</url>
     </scm>
 
     <build>
