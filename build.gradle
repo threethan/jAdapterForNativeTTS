@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'io.github.threethan'
-version '0.13.1'
+version '0.13.2'
 
 repositories {
   mavenCentral()
@@ -20,7 +20,7 @@ publishing {
     mavenJava(MavenPublication) {
       groupId = 'io.github.threethan'
       artifactId = 'jadapterfortts'
-      version = '0.13.1'
+      version = '0.13.2'
 
       from components.java
     }
